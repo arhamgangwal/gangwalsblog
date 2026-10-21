@@ -1,26 +1,114 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --page: #031b2b;
+  --surface: #061f30;
+  --ink: #c4cedd;
+  --muted: #83a7c3;
+  --line: #17374b;
+  --accent: #73dfd0;
+  --accent-ink: #05202b;
+  --date: #70a8ff;
+  --highlight: #ffc26e;
+  --sky-top: #031b2b;
+  --sky: #031b2b;
+  --sky-horizon: #031b2b;
+  --sun: #031b2b;
+  --grass-light: #031b2b;
+  --grass: #031b2b;
+  --grass-dark: #031b2b;
+  color-scheme: dark;
+}
+
+html.dark {
+  --page: #031b2b;
+  --surface: #061f30;
+  --ink: #c4cedd;
+  --muted: #83a7c3;
+  --line: #17374b;
+  --accent: #73dfd0;
+  --accent-ink: #05202b;
+  --date: #70a8ff;
+  --highlight: #ffc26e;
+  --sky-top: #031b2b;
+  --sky: #031b2b;
+  --sky-horizon: #031b2b;
+  --sun: #031b2b;
+  --grass-light: #031b2b;
+  --grass: #031b2b;
+  --grass-dark: #031b2b;
+  color-scheme: dark;
+}
+
+html.light {
+  --page: #f7f6f2;
+  --surface: #ffffff;
+  --ink: #111111;
+  --muted: #5c5c5c;
+  --line: #d4d4d4;
+  --accent: #111111;
+  --accent-ink: #ffffff;
+  --date: #333333;
+  --highlight: #2f6d32;
+  --sky-top: #6eb4e6;
+  --sky: #9eceef;
+  --sky-horizon: #d7eef8;
+  --sun: #fff4c8;
+  --grass-light: #7cb86a;
+  --grass: #4e9a4a;
+  --grass-dark: #2f6d32;
+  color-scheme: light;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--page);
+  --color-foreground: var(--ink);
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-date: var(--date);
+  --color-highlight: var(--highlight);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  min-height: 100%;
+  background-color: var(--page);
+}
+
+html.light {
+  background-color: var(--sky);
+  background-image:
+    radial-gradient(circle at 78% 16%, var(--sun) 0 1.6%, color-mix(in srgb, var(--sun) 35%, transparent) 1.6% 5.5%, transparent 6.2%),
+    radial-gradient(120% 38% at 50% 62%, var(--grass-light) 0%, transparent 72%),
+    linear-gradient(
+      to bottom,
+      var(--sky-top) 0%,
+      var(--sky) 38%,
+      var(--sky-horizon) 56%,
+      var(--grass-light) 56.2%,
+      var(--grass) 74%,
+      var(--grass-dark) 100%
+    );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100%;
+  background-color: var(--page);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+html.light body {
+  background-color: transparent;
 }

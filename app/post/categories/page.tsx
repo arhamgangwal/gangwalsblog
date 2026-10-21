@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { initAuth } from "@/lib/auth";
 import CategoryManager from "@/components/CategoryManager";
 
-export const dynamic = "force-dynamic";
+export const instant = false;
 
 export default async function CategoriesPage() {
   const auth = await initAuth();

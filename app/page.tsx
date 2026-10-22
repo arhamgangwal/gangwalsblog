@@ -15,73 +15,15 @@ type BlogPost = {
   categories: string[];
 };
 
-const defaultCategories = [
-  "Personal",
-  "Technology",
-  "Programming",
-  "Projects",
-  "Ideas & Notes",
-];
-
-function Artwork() {
-  return (
-    <div className="mt-7 border border-[var(--line)] bg-[var(--surface)] p-1">
-      <div className="flex h-5 items-center justify-between bg-[var(--line)] px-1 text-[9px] text-[var(--ink)]">
-        <span>▧</span>
-        <span className="font-mono tracking-[0.2em]">[ FIG. 1 ]</span>
-        <span>☷</span>
-      </div>
-
-      <svg
-        viewBox="0 0 240 180"
-        className="w-full"
-        fill="none"
-        stroke="var(--muted)"
-        strokeWidth="0.85"
-        aria-label="Abstract geometric line illustration"
-      >
-        <defs>
-          <pattern
-            id="dots"
-            width="14"
-            height="14"
-            patternUnits="userSpaceOnUse"
-          >
-            <circle
-              cx="2"
-              cy="2"
-              r="0.6"
-              fill="var(--line)"
-              stroke="none"
-            />
-          </pattern>
-        </defs>
-
-        <rect width="240" height="180" fill="url(#dots)" stroke="none" />
-
-        {Array.from({ length: 12 }, (_, i) => (
-          <g key={i} transform={`rotate(${i * 30} 120 90)`}>
-            <path d="M120 90 C87 78 86 48 120 19 C154 48 153 78 120 90Z" />
-            <path d="M120 90 C99 73 103 48 120 34 C137 48 141 73 120 90Z" />
-            <path d="M120 90 L120 19" />
-            <path d="M103 72 Q120 57 137 72" />
-            <path d="M108 49 Q120 40 132 49" />
-            <circle cx="120" cy="43" r="3" />
-          </g>
-        ))}
-
-        <circle cx="120" cy="90" r="22" />
-        <circle cx="120" cy="90" r="13" />
-        <circle cx="120" cy="90" r="5" />
-      </svg>
-    </div>
-  );
+function normalizeCategory(category: string) {
+  return category.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
 export default function Home() {
   const { data: session, isPending } = authClient.useSession();
   const [profileOpen, setProfileOpen] = useState(false);
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [managedCategories, setManagedCategories] = useState<string[]>([]);
   const [postsLoading, setPostsLoading] = useState(true);
   const [postsError, setPostsError] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All Posts");
@@ -107,10 +49,12 @@ export default function Home() {
           throw new Error("Could not load posts");
         }
 
-        const data: BlogPost[] = await response.json();
+        const data: { posts: BlogPost[]; categories: string[] } =
+          await response.json();
 
         if (active) {
-          setPosts(data);
+          setPosts(data.posts);
+          setManagedCategories(data.categories);
           setPostsError(false);
         }
       } catch (error) {
@@ -133,30 +77,40 @@ export default function Home() {
     };
   }, []);
 
+  const categoryCounts = new Map<string, { name: string; count: number }>();
+
+  for (const post of posts) {
+    const postCategoryKeys = new Set<string>();
+
+    for (const category of post.categories) {
+      const name = category.trim().replace(/\s+/g, " ");
+      const key = normalizeCategory(name);
+
+      if (!key || postCategoryKeys.has(key)) continue;
+      postCategoryKeys.add(key);
+
+      const existing = categoryCounts.get(key);
+      categoryCounts.set(key, {
+        name: existing?.name ?? name,
+        count: (existing?.count ?? 0) + 1,
+      });
+    }
+  }
+
+  for (const category of managedCategories) {
+    const name = category.trim().replace(/\s+/g, " ");
+    const key = normalizeCategory(name);
+
+    if (key && !categoryCounts.has(key)) {
+      categoryCounts.set(key, { name, count: 0 });
+    }
+  }
+
   const categories = [
     { name: "All Posts", count: posts.length },
-    ...defaultCategories.map((name) => ({
-      name,
-      count: posts.filter((post) =>
-        post.categories.some(
-          (category) => category.toLowerCase() === name.toLowerCase(),
-        ),
-      ).length,
-    })),
-    ...Array.from(
-      new Set(
-        posts.flatMap((post) => post.categories).filter(
-          (category) =>
-            !defaultCategories.some(
-              (defaultCategory) =>
-                defaultCategory.toLowerCase() === category.toLowerCase(),
-            ),
-        ),
-      ),
-    ).map((name) => ({
-      name,
-      count: posts.filter((post) => post.categories.includes(name)).length,
-    })),
+    ...Array.from(categoryCounts.values()).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    ),
   ];
 
   const filteredPosts =
@@ -165,7 +119,7 @@ export default function Home() {
       : posts.filter((post) =>
           post.categories.some(
             (category) =>
-              category.toLowerCase() === selectedCategory.toLowerCase(),
+              normalizeCategory(category) === normalizeCategory(selectedCategory),
           ),
         );
 
@@ -209,7 +163,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-transparent font-sans text-[var(--ink)]">
-      <div className="mx-auto my-4 flex min-h-[calc(100vh-2rem)] max-w-[1800px] flex-col overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-[var(--page)] shadow-xl [html.light_&]:w-[calc(100%-2rem)] sm:[html.light_&]:my-8 sm:[html.light_&]:w-[calc(100%-4rem)] lg:[html.light_&]:my-10 lg:[html.light_&]:w-[calc(100%-5rem)]">
+      <div className="mx-auto my-4 flex min-h-[calc(100vh-2rem)] max-w-[1800px] flex-col overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-[var(--page)] shadow-xl sm:[html.light_&]:my-8 lg:[html.light_&]:my-10">
         {/* Navigation */}
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] px-4 py-3">
           <nav className="flex flex-wrap items-center gap-1 font-mono text-[10px] sm:text-xs">
@@ -228,51 +182,6 @@ export default function Home() {
               [B] BLOG
             </Link>
 
-            <Link
-              href="/"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] transition hover:brightness-110"
-            >
-              [E] EVENTS
-            </Link>
-
-            <Link
-              href="/about"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] transition hover:brightness-110"
-            >
-              [D] DOCS
-            </Link>
-
-            <a
-              href="https://youtube.com"
-              target="_blank"
-              rel="noreferrer"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] transition hover:brightness-110"
-            >
-              [Y] YOUTUBE
-            </a>
-
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] transition hover:brightness-110"
-            >
-              [G] GITHUB
-            </a>
-
-            <Link
-              href="/about"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] transition hover:brightness-110"
-            >
-              [M] PROJECTS
-            </Link>
-
-            <Link
-              href="/about"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] transition hover:brightness-110"
-            >
-              [U] ABOUT
-            </Link>
           </nav>
 
           <div className="flex flex-wrap items-center gap-2 font-mono text-[10px] sm:text-xs">
@@ -440,7 +349,6 @@ export default function Home() {
               })}
             </div>
 
-            <Artwork />
           </aside>
 
           <div className="min-w-0">
@@ -493,43 +401,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="mx-4 mt-4 grid grid-cols-1 gap-8 border-t border-[var(--line)] py-8 sm:mx-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1.1fr_0.7fr]">
-          <div>
-            <p className="font-mono text-xs tracking-wider text-[var(--ink)]">
-              + &nbsp; A BLOG BY ARHAM GANGWAL
-            </p>
-
-            <p className="mt-3 text-sm text-[var(--muted)]">
-              Notes, projects, technology and everything in between.
-            </p>
-          </div>
-
-          <div className="border-[var(--line)] sm:border-l sm:pl-8">
-            <p className="mb-4 font-mono text-xs text-[var(--ink)]">/ SOCIAL</p>
-
-            <div className="flex flex-wrap gap-x-5 gap-y-3 font-mono text-xs text-[var(--accent)]">
-              <a href="https://youtube.com" target="_blank" rel="noreferrer">
-                [Y] YOUTUBE
-              </a>
-
-              <a href="https://github.com" target="_blank" rel="noreferrer">
-                [G] GITHUB
-              </a>
-
-              <Link href="/about">[M] PROJECTS</Link>
-            </div>
-          </div>
-
-          <div className="border-[var(--line)] sm:border-l sm:pl-8">
-            <p className="mb-4 font-mono text-xs text-[var(--ink)]">/ CONTACT</p>
-
-            <div className="flex flex-wrap gap-5 font-mono text-xs text-[var(--accent)]">
-              <Link href="/about">[U] ABOUT</Link>
-              <Link href={isAdmin ? "/post" : "/signin"}>[C] CONSOLE</Link>
-            </div>
-          </div>
-        </footer>
       </div>
     </main>
   );

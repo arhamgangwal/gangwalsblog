@@ -157,51 +157,6 @@ async function BlogArticle({
               [B] BLOG
             </Link>
 
-            <Link
-              href="/"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] hover:brightness-110"
-            >
-              [E] EVENTS
-            </Link>
-
-            <Link
-              href="/about"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] hover:brightness-110"
-            >
-              [D] DOCS
-            </Link>
-
-            <a
-              href="https://youtube.com"
-              target="_blank"
-              rel="noreferrer"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] hover:brightness-110"
-            >
-              [Y] YOUTUBE
-            </a>
-
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] hover:brightness-110"
-            >
-              [G] GITHUB
-            </a>
-
-            <Link
-              href="/about"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] hover:brightness-110"
-            >
-              [M] PROJECTS
-            </Link>
-
-            <Link
-              href="/about"
-              className="bg-[var(--surface)] px-3 py-2 text-[var(--accent)] hover:brightness-110"
-            >
-              [U] ABOUT
-            </Link>
           </nav>
 
           <div className="article-header-controls flex gap-2 font-mono text-[10px] sm:text-xs">
@@ -363,26 +318,6 @@ async function BlogArticle({
           </article>
         </section>
 
-        {/* Footer */}
-        <footer className="mx-4 mt-4 grid grid-cols-1 gap-6 border-t border-[var(--line)] py-8 sm:mx-8 sm:grid-cols-2">
-          <div>
-            <p className="font-mono text-xs tracking-wider text-[var(--ink)]">
-              + &nbsp; A BLOG BY ARHAM GANGWAL
-            </p>
-            <p className="mt-3 text-sm text-[var(--muted)]">
-              Notes, projects, technology and everything in between.
-            </p>
-          </div>
-
-          <div className="sm:text-right">
-            <p className="font-mono text-xs text-[var(--muted)]">
-              DESIGNED TO DOCUMENT THE PROCESS.
-            </p>
-            <p className="mt-3 font-mono text-xs text-[var(--accent)]">
-              JAIPUR, INDIA
-            </p>
-          </div>
-        </footer>
       </div>
     </main>
   );

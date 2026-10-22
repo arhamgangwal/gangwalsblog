@@ -52,13 +52,6 @@ html.light {
   --accent-ink: #ffffff;
   --date: #333333;
   --highlight: #2f6d32;
-  --sky-top: #6eb4e6;
-  --sky: #9eceef;
-  --sky-horizon: #d7eef8;
-  --sun: #fff4c8;
-  --grass-light: #7cb86a;
-  --grass: #4e9a4a;
-  --grass-dark: #2f6d32;
   color-scheme: light;
 }
 
@@ -74,8 +67,8 @@ html.light {
   --color-accent-ink: var(--accent-ink);
   --color-date: var(--date);
   --color-highlight: var(--highlight);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-jetbrains-mono);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 html {
@@ -84,29 +77,14 @@ html {
 }
 
 html.light {
-  background-color: var(--sky);
-  background-image:
-    radial-gradient(circle at 78% 16%, var(--sun) 0 1.6%, color-mix(in srgb, var(--sun) 35%, transparent) 1.6% 5.5%, transparent 6.2%),
-    radial-gradient(120% 38% at 50% 62%, var(--grass-light) 0%, transparent 72%),
-    linear-gradient(
-      to bottom,
-      var(--sky-top) 0%,
-      var(--sky) 38%,
-      var(--sky-horizon) 56%,
-      var(--grass-light) 56.2%,
-      var(--grass) 74%,
-      var(--grass-dark) 100%
-    );
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-color: var(--page);
 }
 
 body {
   min-height: 100%;
   background-color: var(--page);
   color: var(--ink);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-jetbrains-mono), monospace;
 }
 
 html.light body {
